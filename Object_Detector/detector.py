@@ -76,8 +76,8 @@ class Detector:
 # Making object of Detector class and calling its functions
 
 d = Detector()
-d.detection_on_video(0)
-d.detection_on_images_folder(os.path.join(os.path.dirname(__file__), '..', 'Images'))
+# d.detection_on_video(0)
+d.detection_on_images_folder('../Images')
 
 #------------------------------------------------------
 
