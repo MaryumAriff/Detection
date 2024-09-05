@@ -1,23 +1,26 @@
-# from torch.utils.tensorboard.summary import video
 from ultralytics import YOLO
-from Object_Visualizer import visualize
+from Utility_Functions.utils import *
 import cv2
-import os
-import pandas
 
 
 class Detector:
 
-    def __init__(self):  # Constructor to Load our model
-        self.model = YOLO('Object_Detector/Model/yolov8n.pt')
+    def __init__(self, model_name):
+        self.model = YOLO('Object_Detector/Model/' + model_name)
 
-    def image_detection(self, image):  # Detect objects in one image/frame
-        object_detections = self.model(image)
+    def image_processing(self, image, classes_to_detect, threshold):  # Detect objs in 1 image
+
+        names = self.model.names
+        class_indexes = get_class_indexes(classes_to_detect, names) # Func to get index from class name
+
+        object_detections = self.model.predict(source=image, conf=threshold, classes=class_indexes)  # results
+
         return object_detections
 
-    def video_processing(self, video_source):  # Process a video stream
+    def video_processing(self, video_source, classes, threshold):  # Process a video stream
 
-        cap = cv2.VideoCapture(video_source)  # Starting Video Capture
+        detected_objects = []
+        cap = cv2.VideoCapture(video_source)
 
         if not cap.isOpened():
             print("Error: Could not open video source.")
@@ -31,20 +34,28 @@ class Detector:
                 print("Error: Failed to capture frame.")
                 break
 
-            # Calling detector for one image
-            result = self.image_detection(frame)
 
-            # Calling visualizing function
-            visualize.draw_box(result,frame)
+            #Correcting format of classes
+            classes = classes.lower()
+            classes_to_detect = classes.split(',')
+
+            #Correcting format of threshold
+            threshold = round(threshold, 2)
+
+            # Calling detector for one image
+            detected_objects = self.image_processing(frame, classes_to_detect, threshold)
+
+            # Calling visualization function
+            frame=draw_bounding_box(detected_objects, frame)
+
+            cv2.imshow('YOLOv8 Detection', frame) #output
 
             # Breaking the loop if 'q' is pressed
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
-        # Releasing the Video Capture
         cap.release()
         cv2.destroyAllWindows()
-
 
 
 
