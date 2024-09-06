@@ -9,8 +9,8 @@ class Detector:
 
         self.model = YOLO('ObjectDetector/Model/' + model_name)
         self.threshold = threshold
-        names = self.model.names
-        self.class_indexes = get_class_indexes(classes_to_detect, names)
+        self.names = self.model.names
+        self.class_indexes = get_class_indexes(classes_to_detect, self.names)
 
 
     def image_processing(self, image):  # Detect objs in 1 image

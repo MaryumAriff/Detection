@@ -1,6 +1,7 @@
 import cv2
 
 def draw_bounding_box(result, frame):
+
     boxes = result[0].boxes
 
     for box in boxes:
@@ -14,18 +15,14 @@ def draw_bounding_box(result, frame):
         cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
         cv2.putText(frame, title, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
-        # Display the frame
-    # cv2.imshow('YOLOv8 Detection', frame)
-
     return frame
 
 def get_class_indexes(classes_to_detect, names):
 
     class_indexes = []
 
-    for c in classes_to_detect:
-        for key, value in names.items():
-            if value == c:
-                class_indexes.append(key)
+    for key, value in names.items():
+        if value in classes_to_detect:
+            class_indexes.append(key)
 
     return class_indexes
